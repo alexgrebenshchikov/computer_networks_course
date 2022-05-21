@@ -21,8 +21,15 @@ def scan_network(ip):
             verbose = False)[0]    
     ]
 
+
+def apply_mask(ip_addr):
+    return [a & b for a, b in zip(MASK, list(map(lambda s: int(s), ip_addr.split('.'))))]
+
+def check_ip_using_mask(ip_addr):
+    return apply_mask(ip_addr) == apply_mask(HOME_IP_ADDR) 
+
 clients = scan_network(f'{NETWORK_IP_ADDR}/24')
-clients = list(filter(lambda host: host['ip'] != HOME_IP_ADDR, clients))
+clients = list(filter(lambda host: host['ip'] != HOME_IP_ADDR and check_ip_using_mask(host['ip']), clients))
 
 layout = [
     [py_gui.ProgressBar(len(clients) + 1, orientation='h', size=(50, 20), key='progress_bar')],
